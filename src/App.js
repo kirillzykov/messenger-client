@@ -6,6 +6,13 @@ import RegisterForm from './components/RegisterForm';
 import ChatContainer from './components/chats/ChatContainer'
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
+
+/*
+	TODO:
+		Error handling
+		Data validation
+*/
+
 export default class Layout extends Component {
 	
 	constructor(props) {
