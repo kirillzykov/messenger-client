@@ -27,14 +27,22 @@ export default class ChatContainer extends Component {
             credentials: 'include',
             body: JSON.stringify({"UserId": `${this.props.user}`}),
             headers: { 'Content-Type': 'application/json' }
-        });
-		const json = await response.json().catch();
-		var newChats=[];
-		json.forEach(element => {
-			newChats.push(element)
 		});
-		console.log(json)
-		this.setState({chats:newChats})
+		if(response.status.toString() === '401'){
+			this.props.history.push('/');
+		}else{
+		
+			const json = await response.json();
+			console.log(json);
+			if(json.toString() !== 'not found'){
+				var newChats=[];
+				json.forEach(element => {
+					newChats.push(element)
+				});
+			console.log(json)
+			this.setState({chats:newChats})
+			}
+		}
 
 		var connection = new HubConnectionBuilder()
 		.withUrl("https://localhost:44330/chatHub").build();
@@ -47,19 +55,22 @@ export default class ChatContainer extends Component {
 			return console.error(err.toString());
 		});
 		connection.on("ReceiveConv",async  () =>{
+			alert("conv");
 			var response = await fetch(`https://localhost:44330/api/GetConversations`,
 			{
 				method: 'POST',
 				credentials: 'include',
 				body: JSON.stringify({"UserId": `${this.props.user}`}),
 				headers: { 'Content-Type': 'application/json' }
-			}).catch();
-			const json = await response.json();
-			var newChats=[];
-			json.forEach(element => {
-				newChats.push(element)
 			});
-			this.setState({chats:newChats})
+			const json = await response.json();
+			if(json.toString() !== 'not found'){
+				var newChats=[];
+				json.forEach(element => {
+					newChats.push(element)
+				});
+				this.setState({chats:newChats})
+			}
 		});
 	}
 
@@ -113,7 +124,12 @@ export default class ChatContainer extends Component {
 			});
 		}
 		this.setState({messages:newMessages})
-		this.state.hubConnection.on("ReceiveMessage",async  () =>{
+		console.log(activeChat.conversationrId);
+		this.state.hubConnection
+		.invoke("AddToGroup", activeChat.conversationrId).catch(function (err) {
+			return console.error(err.toString());
+		}); 
+		this.state.hubConnection.on("Send",async  () =>{
 			console.log(activeChat);
 			var response = await  fetch(`https://localhost:44330/api/GetMessages`,
 			{
@@ -132,6 +148,25 @@ export default class ChatContainer extends Component {
 			console.log(newMessages);
 			this.setState({messages:newMessages})
 		});
+		/*this.state.hubConnection.on("ReceiveMessage",async  () =>{
+			console.log(activeChat);
+			var response = await  fetch(`https://localhost:44330/api/GetMessages`,
+			{
+				method: 'POST',
+				credentials: 'include',
+				body: JSON.stringify({"ConversationId": `${activeChat.conversationrId}`}),
+				headers: { 'Content-Type': 'application/json' }
+			});
+			const json = await response.json();
+			var newMessages=[];
+			if(json.toString() !=="not found"){
+				json.forEach(element => {
+					newMessages.push(element)
+				});
+			}
+			console.log(newMessages);
+			this.setState({messages:newMessages})
+		});*/
 	}
 	render() {
 		const { user, logout } = this.props

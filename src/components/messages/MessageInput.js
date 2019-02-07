@@ -27,8 +27,13 @@ export default class MessageInput extends Component {
 				"Content": `${this.state.message}`}),
             headers: { 'Content-Type': 'application/json' }
 		});
-		this.props.hubConnection
+		/*this.props.hubConnection
 		.invoke("SendMessage", this.props.userId, this.state.message).catch(function (err) {
+			return console.error(err.toString());
+		}); */
+		console.log(this.props.convId)
+		this.props.hubConnection
+		.invoke("SendMessageToGroup", this.props.convId, this.state.message).catch(function (err) {
 			return console.error(err.toString());
 		}); 
 		this.props.sendMessage(this.state.message)

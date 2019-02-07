@@ -35,6 +35,7 @@ export default class RegisterForm extends Component {
         if(status !== 'BadRequest'){
             this.props.history.push(`/login`);           
         }else{
+            alert('BadRequest');
             this.props.history.push('/');
         }    
     }

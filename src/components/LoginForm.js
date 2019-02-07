@@ -37,7 +37,8 @@ export default class LoginForm extends Component {
 		if(status !== 'BadRequest'){
 			this.props.history.push(`/chat/${status}`);
 		}else{
-			this.props.history.push('/');
+            this.props.history.push('/');
+            alert('BadRequest');
 		}
 		console.log(await status);	
 		 
