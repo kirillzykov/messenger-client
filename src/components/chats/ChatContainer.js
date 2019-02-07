@@ -21,11 +21,10 @@ export default class ChatContainer extends Component {
 	}
 	async componentWillMount() {
 		console.log(this.props.user)
-		var response = await fetch(`https://localhost:44330/api/GetConversations`,
+		var response = await fetch(`https://localhost:44330/api/GetConversations/${this.props.user}`,
         {
-            method: 'POST',
+            method: 'GET',
             credentials: 'include',
-            body: JSON.stringify({"UserId": `${this.props.user}`}),
             headers: { 'Content-Type': 'application/json' }
 		});
 		if(response.status.toString() === '401'){
@@ -56,13 +55,12 @@ export default class ChatContainer extends Component {
 		});
 		connection.on("ReceiveConv",async  () =>{
 			alert("conv");
-			var response = await fetch(`https://localhost:44330/api/GetConversations`,
-			{
-				method: 'POST',
-				credentials: 'include',
-				body: JSON.stringify({"UserId": `${this.props.user}`}),
-				headers: { 'Content-Type': 'application/json' }
-			});
+			var response = await fetch(`https://localhost:44330/api/GetConversations/${this.props.user}`,
+        {
+            method: 'GET',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+		});
 			const json = await response.json();
 			if(json.toString() !== 'not found'){
 				var newChats=[];
@@ -109,13 +107,12 @@ export default class ChatContainer extends Component {
 
 	setActiveChat = async (activeChat)=>{
 		this.setState({activeChat})
-		var response = await fetch(`https://localhost:44330/api/GetMessages`,
-        {
-            method: 'POST',
-            credentials: 'include',
-            body: JSON.stringify({"ConversationId": `${activeChat.conversationrId}`}),
-            headers: { 'Content-Type': 'application/json' }
-        });
+		var response = await  fetch(`https://localhost:44330/api/GetMessages/${activeChat.conversationrId}`,
+			{
+				method: 'GET',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' }
+			});
 		const json = await response.json();
 		var newMessages=[];
 		if(json.toString() !=="not found"){
@@ -131,11 +128,10 @@ export default class ChatContainer extends Component {
 		}); 
 		this.state.hubConnection.on("Send",async  () =>{
 			console.log(activeChat);
-			var response = await  fetch(`https://localhost:44330/api/GetMessages`,
+			var response = await  fetch(`https://localhost:44330/api/GetMessages/${activeChat.conversationrId}`,
 			{
-				method: 'POST',
+				method: 'GET',
 				credentials: 'include',
-				body: JSON.stringify({"ConversationId": `${activeChat.conversationrId}`}),
 				headers: { 'Content-Type': 'application/json' }
 			});
 			const json = await response.json();
